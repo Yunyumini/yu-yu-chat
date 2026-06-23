@@ -281,9 +281,29 @@
         const sendButton = document.getElementById('send-button');
         const typingIndicator = document.getElementById('typing-indicator');
 
-        // 对话历史（system prompt 固定在最前面 → 有利于缓存前缀匹配）
+        // ================================================================
+        // 对话历史（缓存优化策略）
+        //
+        // DeepSeek 硬盘缓存规则：前缀精确匹配（从第 0 个 token 开始）
+        // 因此我们把最稳定的内容全部放在最前面：
+        //
+        //   [system] ← 固定不变
+        //   [few-shot user] ← 固定示例（增加可缓存的固定前缀长度）
+        //   [few-shot assistant] ← 固定示例
+        //   [initial greeting] ← 固定开场白
+        //   [...实际对话...] ← 唯一变化的部分
+        //
+        // 这样每条真实消息发出时，开头的几百个 token 全部命中缓存，
+        // 费用从 $0.14/百万 tokens → $0.028/百万 tokens，节省约 80%
+        // ================================================================
         const conversationHistory = [
             { role: 'system', content: SYSTEM_PROMPT },
+
+            // ▼ 固定 few-shot 示例（永不变化 → 大规模缓存命中）▼
+            { role: 'user', content: '今天天气真好，适合出去走走。' },
+            { role: 'assistant', content: '是啊，阳光暖暖的，风也不急不躁的，光是想想就觉得心里软软的。左眼皮今天有出门的计划吗？' },
+            // ▲ 固定 few-shot 结束 ▲
+
             { role: 'assistant', content: '你好呀，左眼皮！我是玉雨，很高兴能和你聊天呢。' }
         ];
 
