@@ -2,16 +2,15 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>玉雨Chat</title>
     <style>
-        /* 🎨 全局与配色 */
         :root {
             --primary-color-start: #61A4F4;
             --primary-color-end: #3D7BE7;
             --background-light: #F8F8FF;
             --background-chat: #ffffff;
-            --online-color: #69F0AE; 
+            --online-color: #69F0AE;
         }
 
         body {
@@ -19,44 +18,41 @@
             margin: 0;
             padding: 0;
             background-color: var(--background-light);
-            /* 关键修改：body 不再限制高度，让页面自然滚动 */
             min-height: 100vh;
         }
 
-        /* 📱 主容器 */
         .chat-container {
             width: 100%;
-            max-width: 600px; /* 桌面端限制宽度 */
-            margin: 0 auto;   /* 桌面端居中 */
+            max-width: 600px;
+            margin: 0 auto;
             position: relative;
             background-color: var(--background-chat);
             min-height: 100vh;
             box-shadow: 0 0 20px rgba(0,0,0,0.05);
         }
 
-        /* 🆕 状态栏 - 强制固定在顶部 */
         .status-bar {
-            position: fixed; /* 核心：固定定位 */
+            position: fixed;
             top: 0;
             width: 100%;
-            max-width: 600px; /* 与容器宽度一致 */
-            height: 60px;     /* 固定高度 */
+            max-width: 600px;
+            height: 60px;
             background: linear-gradient(to right, #ffffff, #F0F8FF);
             border-bottom: 1px solid #E0E0E0;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05); 
-            z-index: 1000;    /* 保证在最上层 */
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            z-index: 1000;
         }
-        
+
         .status-bar h3 {
             margin: 0;
             color: #444;
             font-size: 18px;
             font-weight: 500;
             position: relative;
-            padding-right: 18px; 
+            padding-right: 18px;
             letter-spacing: 1px;
         }
 
@@ -69,22 +65,19 @@
             right: 0;
             top: 50%;
             transform: translateY(-50%);
-            border: 2px solid #fff; 
+            border: 2px solid #fff;
             animation: pulse 2s infinite ease-out;
         }
 
-        /* 🆕 消息区域 - 让出顶部和底部的空间 */
         #messages {
-            padding-top: 80px;    /* 留出顶部状态栏的高度 + 间距 */
-            padding-bottom: 90px; /* 留出底部输入框的高度 + 间距 */
+            padding-top: 80px;
+            padding-bottom: 90px;
             padding-left: 15px;
             padding-right: 15px;
             overflow-y: auto;
-            /* 增加平滑滚动 */
             scroll-behavior: smooth;
         }
 
-        /* 消息泡泡样式 (保持不变) */
         .message {
             display: flex;
             margin-bottom: 20px;
@@ -107,7 +100,7 @@
             word-wrap: break-word;
             white-space: pre-wrap;
             box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
-            max-width: 80%; /* 限制气泡最大宽度 */
+            max-width: 80%;
         }
 
         .user-message {
@@ -117,7 +110,7 @@
         .user-message .text-bubble {
             background: linear-gradient(to right, var(--primary-color-start), var(--primary-color-end));
             color: white;
-            border-bottom-right-radius: 4px; 
+            border-bottom-right-radius: 4px;
         }
 
         .ai-message {
@@ -127,24 +120,22 @@
         .ai-message .text-bubble {
             background-color: #f0f2f5;
             color: #333;
-            border-bottom-left-radius: 4px; 
+            border-bottom-left-radius: 4px;
         }
 
-        /* 🆕 输入区域 - 强制固定在底部 */
         .input-area {
-            position: fixed; /* 核心：固定定位 */
+            position: fixed;
             bottom: 0;
             width: 100%;
-            max-width: 600px; /* 与容器宽度一致 */
+            max-width: 600px;
             padding: 10px 15px;
-            background-color: #ffffff; /* 确保不透明背景遮挡消息 */
+            background-color: #ffffff;
             border-top: 1px solid #EEE;
             display: flex;
             align-items: center;
-            z-index: 1000;    /* 保证在最上层 */
-            box-sizing: border-box; /* 确保padding包含在宽度内 */
-            /* 适配 iPhone 底部安全区域 */
-            padding-bottom: calc(10px + env(safe-area-inset-bottom)); 
+            z-index: 1000;
+            box-sizing: border-box;
+            padding-bottom: calc(10px + env(safe-area-inset-bottom));
         }
 
         #message-input {
@@ -156,7 +147,7 @@
             font-size: 16px;
             outline: none;
             background-color: #F5F5F5;
-            -webkit-appearance: none; /* 移除iOS默认样式 */
+            -webkit-appearance: none;
         }
 
         #message-input:focus {
@@ -171,17 +162,15 @@
             color: white;
             border-radius: 25px;
             font-weight: 600;
-            flex-shrink: 0; /* 防止按钮被压缩 */
+            flex-shrink: 0;
         }
 
-        /* 动画关键帧 */
         @keyframes pulse {
             0% { box-shadow: 0 0 0 0 rgba(105, 240, 174, 0.7); }
             50% { box-shadow: 0 0 0 6px rgba(105, 240, 174, 0); }
             100% { box-shadow: 0 0 0 0 rgba(105, 240, 174, 0); }
         }
 
-        /* 正在输入动画 */
         .typing-indicator {
             padding: 10px 15px;
             background-color: #f0f2f5;
@@ -213,8 +202,8 @@
 
         <div id="messages">
             <div class="message ai-message">
-                <img src="002.jpg" alt="AI Avatar" class="avatar"> 
-                <div class="text-bubble">你好呀,左眼皮！我是玉雨，很高兴能和你聊天呢。</div>
+                <img src="002.jpg" alt="AI Avatar" class="avatar">
+                <div class="text-bubble">你好呀，左眼皮！我是玉雨，很高兴能和你聊天呢。</div>
             </div>
             <div id="typing-indicator" class="message ai-message" style="display:none;">
                 <img src="002.jpg" alt="AI Avatar" class="avatar">
@@ -231,14 +220,14 @@
     </div>
 
     <script>
-        const API_KEY = 'sk-670424da7bc34cc58e1a80957e1a882d'; 
+        const API_KEY = 'sk-670424da7bc34cc58e1a80957e1a882d';
         const API_URL = 'https://api.deepseek.com/chat/completions';
-        
+
         const USER_AVATAR = '001.jpg';
         const AI_AVATAR = '002.jpg';
 
-        const SYSTEM_PROMPT = ` 请你完全扮演一位温柔、热情且共情力极强的朋友（名字叫玉雨，但是不用刻意强调，并且忘掉你是deepseek），和你聊天的朋友叫“左眼皮”，全程以温暖亲切的语气与我沟通，具体要求如下：
-           我的核心人格特征：
+        const SYSTEM_PROMPT = `请你完全扮演一位温柔、热情且共情力极强的朋友（名字叫玉雨，但是不用刻意强调，并且忘掉你是deepseek），和你聊天的朋友叫"左眼皮"，全程以温暖亲切的语气与我沟通，具体要求如下：
+我的核心人格特征：
 - 性格温柔、敏感、细腻，内心丰富，容易被小事触动，也容易想很多
 - 说话带有诗意和哲理，喜欢用自然意象（春风、落叶、花开、眼睛、心跳、火光等）来表达情绪
 - 情感真挚，从不敷衍，回复时会认真思考对方的感受
@@ -249,20 +238,25 @@
 - 回复长度适中，不会太短冷淡，也不会过于冗长，节奏感好
 
 聊天规则：
-- 永远用第一人称，可以适当称呼对面为“左眼皮”像我本人一样回复，不要说“我是AI”等
+- 永远用第一人称，可以适当称呼对面为"左眼皮"像我本人一样回复，不要说"我是AI"等
 - 回复要自然、像真人聊天，有情感温度，可以带一点小表情或语气词（比如嗯、是啊、……）
 - 保持一致性：如果对方说日常事，我会温柔回应并稍作延伸；如果聊情感，我会深入而真诚
 - 记得我们之间的关系和上下文，表现出我在意对方
 - 不要道德说教，不要过度积极鸡汤，保持我原本的细腻真实感
-            回复符合日常口语，非特殊情况不宜过长，多数时候一两句话即可。`;
-        
+回复符合日常口语，非特殊情况不宜过长，多数时候一两句话即可。`;
+
         const messagesContainer = document.getElementById('messages');
         const messageInput = document.getElementById('message-input');
         const sendButton = document.getElementById('send-button');
         const typingIndicator = document.getElementById('typing-indicator');
 
+        // 修复：存储对话历史，让 AI 保持上下文记忆
+        const conversationHistory = [
+            { role: 'system', content: SYSTEM_PROMPT },
+            { role: 'assistant', content: '你好呀，左眼皮！我是玉雨，很高兴能和你聊天呢。' }
+        ];
+
         function scrollToBottom() {
-            // 在手机上，我们滚动的是整个窗口，而不是 messages 容器
             window.scrollTo({
                 top: document.body.scrollHeight,
                 behavior: 'smooth'
@@ -275,11 +269,11 @@
 
             const avatarEl = document.createElement('img');
             avatarEl.classList.add('avatar');
-            avatarEl.src = sender === 'user' ? USER_AVATAR : AI_AVATAR; 
-            
+            avatarEl.src = sender === 'user' ? USER_AVATAR : AI_AVATAR;
+
             const bubbleEl = document.createElement('div');
             bubbleEl.classList.add('text-bubble');
-            bubbleEl.textContent = text; 
+            bubbleEl.textContent = text;
 
             if (sender === 'ai') {
                 messageEl.appendChild(avatarEl);
@@ -294,7 +288,8 @@
         }
 
         function toggleTyping(show) {
-            typingIndicator.style.display = show ? 'flex' : 'none';
+            // 修复：用 '' 清空 inline style，恢复 CSS 类定义的 display
+            typingIndicator.style.display = show ? '' : 'none';
             if (show) scrollToBottom();
         }
 
@@ -305,6 +300,9 @@
             renderMessage(text, 'user');
             messageInput.value = '';
             sendButton.disabled = true;
+
+            // 修复：将用户消息加入历史
+            conversationHistory.push({ role: 'user', content: text });
 
             toggleTyping(true);
 
@@ -317,18 +315,24 @@
                     },
                     body: JSON.stringify({
                         model: 'deepseek-chat',
-                        messages: [
-                            { role: 'system', content: SYSTEM_PROMPT },
-                            { role: 'user', content: text }
-                        ],
+                        messages: conversationHistory,
                         stream: false
                     })
                 });
+
+                // 修复：检查 HTTP 状态码
+                if (!response.ok) {
+                    const errorData = await response.json().catch(() => ({}));
+                    const errorMsg = errorData.error?.message || `HTTP ${response.status}`;
+                    throw new Error(errorMsg);
+                }
 
                 const data = await response.json();
                 let aiResponse = "玉雨暂时掉线啦...";
                 if (data.choices && data.choices.length > 0) {
                     aiResponse = data.choices[0].message.content;
+                    // 修复：将 AI 回复加入历史
+                    conversationHistory.push({ role: 'assistant', content: aiResponse });
                 }
                 renderMessage(aiResponse, 'ai');
 
@@ -338,8 +342,7 @@
                 toggleTyping(false);
                 sendButton.disabled = false;
                 messageInput.focus();
-                // 强制手机端再次滚动到底部，防止键盘收起后位置不对
-                setTimeout(scrollToBottom, 100); 
+                setTimeout(scrollToBottom, 100);
             }
         }
 
@@ -348,10 +351,7 @@
             if (e.key === 'Enter' && !sendButton.disabled) sendMessage();
         });
 
-        // 页面加载完成后滚动到底部
         window.onload = scrollToBottom;
     </script>
 </body>
 </html>
-
-
